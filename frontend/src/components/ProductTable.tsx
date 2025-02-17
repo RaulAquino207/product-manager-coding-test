@@ -99,6 +99,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
               <TableCell>
                 {/* [COMMENT] Now, instead of calling handleDeleteProduct directly, it will update the useState state to open the modal and confirm the deletion. */}
                 <Button
+                  disabled={!product.available}
                   variant="contained"
                   color="error"
                   onClick={() => handleOpenModal(product)}

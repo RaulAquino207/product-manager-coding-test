@@ -69,6 +69,11 @@ app.put('/products/:id', (req, res) => {
 
 app.delete('/products/:id', (req, res) => {
     const productId = parseInt(req.params.id);
+    const itemToDelete = mockDb.find(p => p.id === productId);
+    
+    if (!itemToDelete) return res.status(404).json({ message: 'Product not found' });
+    if(itemToDelete.available === false) return res.status(400).json({ message: 'Product is not available' });
+
     mockDb = mockDb.filter(p => p.id !== productId);
     res.status(204).send();
 });
