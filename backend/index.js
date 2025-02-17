@@ -36,7 +36,9 @@ app.get('/products', (req, res) => {
     });
 
     if (req.query.search) {
-        const searchRegex = new RegExp(req.query.search, 'i');
+        // [COMMENT] This is a regex to escape special characters in the search query
+        const escapedSearch = req.query.search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); 
+        const searchRegex = new RegExp(escapedSearch, 'i');
         filteredProducts = filteredProducts.filter(product => searchRegex.test(product.name));
     }
 
@@ -70,7 +72,7 @@ app.put('/products/:id', (req, res) => {
 app.delete('/products/:id', (req, res) => {
     const productId = parseInt(req.params.id);
     const itemToDelete = mockDb.find(p => p.id === productId);
-    
+
     if (!itemToDelete) return res.status(404).json({ message: 'Product not found' });
     if(itemToDelete.available === false) return res.status(400).json({ message: 'Product is not available' });
 

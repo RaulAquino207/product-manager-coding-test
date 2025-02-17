@@ -27,13 +27,17 @@ const FilterSortForm: React.FC<FilterSortFormProps> = ({ filter, handleFilterCha
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField
-            label="Search"
-            name="search"
-            value={filter.search}
-            onChange={handleFilterChange}
-            fullWidth
-          />
+          {/* [COMMENT] Display search input only if sorting by name */}
+          {filter.sortBy === 'name' && (
+            <FormControl fullWidth>
+              <TextField
+                name="search"
+                value={filter.search}
+                onChange={handleFilterChange}
+                label="Search by Name"
+              />
+            </FormControl>
+          )}
         </Grid>
       </Grid>
     </Box>
