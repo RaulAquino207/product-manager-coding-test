@@ -1,34 +1,61 @@
-import React from 'react';
-import { TextField, Button, Grid, Typography, Box } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
 
 interface ProductFormProps {
-  newProduct: { name: string; available: boolean };
-  handleInputChange: (e: any) => void;
-  handleAddProduct: () => void;
+  handleProduct: (newProduct: any) => void;
+  product?: { name: string; available: boolean; id?: number };
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ newProduct, handleInputChange, handleAddProduct }) => {
+// [COMMENT] Added a form to handle product creation and editing
+const ProductForm: React.FC<ProductFormProps> = ({
+  handleProduct,
+  product,
+}) => {
+  const [newProduct, setNewProduct] = useState({ name: "", available: false });
+
+  useEffect(() => {
+    if (product) {
+      setNewProduct({ name: product.name, available: product.available });
+    }
+  }, [product]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    if (!newProduct.name.trim()) return;
+    handleProduct({ ...newProduct, id: product?.id });
+  };
+
   return (
-    <Box mb={4}>
-      <Typography variant="h5" gutterBottom>
-        Add New Product
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            label="Name"
-            name="name"
-            value={newProduct.name}
-            onChange={handleInputChange}
-            fullWidth
+    <Box
+      component="form"
+      id="product-form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        width: "100%",
+        paddingTop: "5px",
+      }}
+    >
+      <TextField
+        label="Product Name"
+        variant="outlined"
+        fullWidth
+        value={newProduct.name}
+        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+        required
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={newProduct.available}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, available: e.target.checked })
+            }
           />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <Button variant="contained" color="primary" onClick={handleAddProduct} fullWidth>
-            Add Product
-          </Button>
-        </Grid>
-      </Grid>
+        }
+        label="Available"
+      />
     </Box>
   );
 };

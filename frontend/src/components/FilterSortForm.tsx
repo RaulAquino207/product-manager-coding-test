@@ -7,6 +7,9 @@ interface FilterSortFormProps {
 }
 
 const FilterSortForm: React.FC<FilterSortFormProps> = ({ filter, handleFilterChange }) => {
+
+  // [COMMENT] If no sorting is applied, there is no need for a search input
+  if (filter.sortBy === '') filter.search = '';
   return (
     <Box mb={4}>
       <Typography variant="h5" gutterBottom>

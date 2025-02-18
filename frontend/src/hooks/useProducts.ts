@@ -40,12 +40,27 @@ const useProducts = (initialFilters: Filters) => {
   };
 
   const addProduct = (newProduct: NewProduct) => {
-    axios.post('http://localhost:3000/products', newProduct)
+    axios.post("http://localhost:3000/products", newProduct)
       .then(response => {
         setProducts([...products, response.data]);
       })
       .catch(error => {
-        console.error('There was an error adding the product!', error);
+        console.error("There was an error adding the product!", error);
+      });
+  };
+  
+  // [COMMENT] Added editProduct function
+  const editProduct = (updatedProduct: Product) => {
+    axios.put(`http://localhost:3000/products/${updatedProduct.id}`, updatedProduct)
+      .then(response => {
+        setProducts(prevProducts =>
+          prevProducts.map(product =>
+            product.id === updatedProduct.id ? response.data : product
+          )
+        );
+      })
+      .catch(error => {
+        console.error("There was an error updating the product!", error);
       });
   };
 
@@ -64,6 +79,7 @@ const useProducts = (initialFilters: Filters) => {
     filters,
     setFilters,
     addProduct,
+    editProduct,
     deleteProduct,
   };
 };

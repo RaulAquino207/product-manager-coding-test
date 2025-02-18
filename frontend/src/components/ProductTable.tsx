@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import CustomModal from "./CustomModal";
+import ProductForm from "./ProductForm";
 
 interface Product {
   id: number;
@@ -23,30 +24,51 @@ interface Product {
 interface ProductTableProps {
   products: Product[];
   handleDeleteProduct: (id: number) => void;
+  handleEditProduct: (product: Product) => void;
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({
   products,
   handleDeleteProduct,
+  handleEditProduct,
 }) => {
-  const [open, setOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
-  const handleOpenModal = (product: Product) => {
-    setProductToDelete(product);
-    setOpen(true);
+  const [productToHandle, setProductToHandle] = useState<Product | null>(null);
+
+  const handleConfirmEditProduct = (product: Product) => {
+    if (productToHandle) {
+      handleEditProduct(product);
+    }
+    handleCloseEditModal();
   };
 
-  const handleCloseModal = () => {
-    setOpen(false);
-    setProductToDelete(null);
+  const handleOpenDeleteModal = (product: Product) => {
+    setProductToHandle(product);
+    setOpenDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setOpenDeleteModal(false);
+    setProductToHandle(null);
   };
 
   const handleConfirmDelete = () => {
-    if (productToDelete) {
-      handleDeleteProduct(productToDelete.id);
+    if (productToHandle) {
+      handleDeleteProduct(productToHandle.id);
     }
-    handleCloseModal();
+    handleCloseDeleteModal();
+  };
+
+  const handleCloseEditModal = () => {
+    setOpenDeleteModal(false);
+    setProductToHandle(null);
+  };
+
+  const handleOpenEditModal = (product: Product) => {
+    setProductToHandle(product);
+    setOpenEditModal(true);
   };
 
   // [COMMENT] If there are no products, display a message to the user.
@@ -96,31 +118,38 @@ const ProductTable: React.FC<ProductTableProps> = ({
             <TableRow key={product.id}>
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.available ? "Yes" : "No"}</TableCell>
-              <TableCell>
+              <TableCell sx={{ display: "flex", gap: 1 }}>
                 {/* [COMMENT] Now, instead of calling handleDeleteProduct directly, it will update the useState state to open the modal and confirm the deletion. */}
                 {/* [COMMENT] Disable the delete button if the product is not available. */}
                 <Button
                   disabled={!product.available}
                   variant="contained"
                   color="error"
-                  onClick={() => handleOpenModal(product)}
+                  onClick={() => handleOpenDeleteModal(product)}
                 >
                   Delete
+                </Button>
+                <Button
+                  variant="contained"
+                  color="info"
+                  onClick={() => handleOpenEditModal(product)}
+                >
+                  Edit
                 </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {productToDelete && (
+      {productToHandle && openDeleteModal && (
         <CustomModal
-          open={open}
-          onClose={handleCloseModal}
+          open={openDeleteModal}
+          onClose={handleCloseEditModal}
           title="Are you sure?"
           actions={[
             {
               label: "Cancel",
-              onClick: handleCloseModal,
+              onClick: handleCloseEditModal,
               props: { color: "secondary" },
             },
             {
@@ -131,9 +160,37 @@ const ProductTable: React.FC<ProductTableProps> = ({
           ]}
         >
           <Typography variant="body1" color="textSecondary">
-            Deleting <b>{productToDelete.name}</b> is irreversible. Are you sure
+            Deleting <b>{productToHandle.name}</b> is irreversible. Are you sure
             you want to continue?
           </Typography>
+        </CustomModal>
+      )}
+      {productToHandle && openEditModal && (
+        <CustomModal
+          open={openEditModal}
+          onClose={handleCloseEditModal}
+          title="Create a product"
+          actions={[
+            {
+              label: "Cancel",
+              onClick: handleCloseEditModal,
+              props: { color: "secondary" },
+            },
+            {
+              label: "Save",
+              onClick: () => {},
+              props: { color: "primary", type: "submit", form: "product-form" },
+            },
+          ]}
+        >
+          <ProductForm
+            handleProduct={handleConfirmEditProduct}
+            product={{
+              name: productToHandle!.name,
+              available: productToHandle!.available,
+              id: productToHandle!.id,
+            }}
+          ></ProductForm>
         </CustomModal>
       )}
     </TableContainer>

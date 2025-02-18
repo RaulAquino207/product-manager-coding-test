@@ -49,7 +49,9 @@ app.post('/products', (req, res) => {
     const newProduct = {
         id: mockDb.length + 1,
         name: req.body.name,
-        available: req.body.available || true
+
+        // [COMMENT] This is a shorthand way to set the available property to the value of req.body.available if it exists, otherwise set it to true
+        available: req.body.available ?? true,
     };
     mockDb.push(newProduct);
     res.status(201).json(newProduct);
