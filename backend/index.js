@@ -6,10 +6,6 @@ app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log("Server is Listening on PORT:", PORT);
-});
-
 let mockDb = [
     { id: 1, name: 'Fries', available: true },
     { id: 2, name: 'Big Mac', available: true },
@@ -37,7 +33,7 @@ app.get('/products', (req, res) => {
 
     if (req.query.search) {
         // [COMMENT] This is a regex to escape special characters in the search query
-        const escapedSearch = req.query.search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'); 
+        const escapedSearch = req.query.search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
         const searchRegex = new RegExp(escapedSearch, 'i');
         filteredProducts = filteredProducts.filter(product => searchRegex.test(product.name));
     }
@@ -81,3 +77,11 @@ app.delete('/products/:id', (req, res) => {
     mockDb = mockDb.filter(p => p.id !== productId);
     res.status(204).send();
 });
+
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log("Server is Listening on PORT:", PORT);
+    });
+}
+
+module.exports = app;
