@@ -62,7 +62,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   };
 
   const handleCloseEditModal = () => {
-    setOpenDeleteModal(false);
+    setOpenEditModal(false);
     setProductToHandle(null);
   };
 
@@ -169,7 +169,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
         <CustomModal
           open={openEditModal}
           onClose={handleCloseEditModal}
-          title="Create a product"
+          title="Edit a product"
           actions={[
             {
               label: "Cancel",
